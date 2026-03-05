@@ -1,6 +1,6 @@
 """
 title: 🚑 Mermaid Doctor
-version: 0.1.2
+version: 0.1.3
 author: Hannibal
 [https://github.com/annibale-x/open-webui-mermaid-doctor](https://github.com/annibale-x/open-webui-mermaid-doctor)
 author_email: annibale.x@gmail.com
