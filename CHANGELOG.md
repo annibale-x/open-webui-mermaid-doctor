@@ -1,3 +1,5 @@
+* 2026-03-05: v0.1.3 - README.md (Hannibal)
+
 * 2026-03-05: v0.1.2 - ER Syntax Hardening (Hannibal)
   * Enhanced ER diagram sanitization to prevent relationship nesting within entity blocks
   * Updated FEW_SHOTS_TEMPLATE with explicit ER syntax constraints and instructions
