@@ -8,6 +8,17 @@ Mermaid Doctor is a high-performance, transparent filter for Open WebUI designed
 
 ---
 
+### ✨ Features
+
+- **Transparent MITM Filter:** Operates as a Man-in-the-Middle between the LLM and the UI. It intercepts, analyzes, and heals diagrams before they reach the renderer.
+- **Zero Token Overhead:** MD is entirely deterministic. It does not perform secondary LLM calls to "fix" the code, preserving your context window and API costs.
+- **On-the-fly Sanitization:** Repairs are applied to the generation frames during the streaming phase, preventing the UI from flickering between "broken" and "fixed" states.
+- **Structural Enforcement:** Corrects common hallucinations like nested ER relationships, invalid bracket nesting in graphs, ragmented Gantt task definitions and more.
+
+> 📌Mermaid Doctor is not a substitute for a well-crafted prompt. It is a deterministic sanitizer designed to fix common syntactic hallucinations and structural errors. For optimal results, always provide clear instructions to the LLM alongside this filter.
+
+---
+
 ### ⚠️ Disclaimer: First Release & Dataset
 
 This is an initial release. LLM hallucinations, especially in smaller models, present a nearly infinite variety of syntactic edge cases. 
@@ -18,15 +29,6 @@ The current sanitizer logic was developed and validated against a dataset of app
 - GPT-4o-Mini.
 
 Future updates may include a significantly larger training/validation dataset (~100,000 samples) across a wider range of architectures, depending on community feedback and adoption.
-
----
-
-### ✨ Features
-
-- **Transparent MITM Filter:** Operates as a Man-in-the-Middle between the LLM and the UI. It intercepts, analyzes, and heals diagrams before they reach the renderer.
-- **Zero Token Overhead:** MD is entirely deterministic. It does not perform secondary LLM calls to "fix" the code, preserving your context window and API costs.
-- **On-the-fly Sanitization:** Repairs are applied to the generation frames during the streaming phase, preventing the UI from flickering between "broken" and "fixed" states.
-- **Structural Enforcement:** Corrects common hallucinations like nested ER relationships, invalid bracket nesting in graphs, ragmented Gantt task definitions and more.
 
 ---
 
@@ -45,7 +47,7 @@ Future updates may include a significantly larger training/validation dataset (~
 
 - **Stream Buffer Management:** The filter does not wait for the end of the generation. It uses a lookbehind buffer (15-character window) to detect Mermaid tags and starts sanitizing chunks as they arrive.
 - **Regex-Based Determinism:** Instead of probabilistic fixing, MD uses a specialized set of regular expressions and string re-assemblers tailored to the specific failure modes of modern LLMs.
-- **Glued Tag Correction:** Automatically detects and fixes cases where models fail to prepend a newline to the ` ```mermaid ` tag, which often breaks the Open WebUI renderer.
+
 
 ---
 
