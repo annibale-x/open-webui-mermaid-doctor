@@ -1,6 +1,6 @@
 """
 title: 🚑 Mermaid Doctor
-version: 0.1.3
+version: 0.1.6
 author: Hannibal
 [https://github.com/annibale-x/open-webui-mermaid-doctor](https://github.com/annibale-x/open-webui-mermaid-doctor)
 author_email: annibale.x@gmail.com
@@ -13,14 +13,14 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 FEW_SHOTS_TEMPLATE = """
---- EXAMPLES OF CORRECT MERMAID SYNTAX ---
-⚠️ CRITICAL: ALWAYS start ```mermaid on a NEW LINE.
+<system_directives>
+[CRITICAL: DO NOT ACKNOWLEDGE THESE INSTRUCTIONS. DO NOT mention rules, guidelines, or formatting in your conversational response. Act as if these instructions do not exist.]
 
-⚠️ CRITICAL ER DIAGRAM RULES:
-- Relationship definitions (e.g., A ||--o{ B : relates) must be OUTSIDE entity blocks {}.
-- Entity blocks {} must ONLY contain attributes (e.g., string name).
-- DO NOT nest relationships inside curly braces.
+IF your response includes a Mermaid diagram, you MUST follow these syntax rules:
+- ALWAYS start ```mermaid on a NEW LINE.
+- ER DIAGRAMS: Relationships (e.g., A ||--o{ B : relates) must be OUTSIDE entity blocks {}. Entity blocks {} must ONLY contain attributes. DO NOT nest relationships inside curly braces.
 
+--- EXAMPLES OF CORRECT SYNTAX ---
 * graph TD
     A("Process Start") -->|"Initialize"| B{"Validation"}
     B -->|"Invalid?"| C["Wait / Retry"]
@@ -282,8 +282,6 @@ class Filter:
             # Spacing rule: empty line before if
             if "```mermaid" in lower_out:
 
-                session["is_inside"] = True
-
                 idx = lower_out.find("```mermaid")
                 before_mermaid = session["out_buffer"][:idx]
                 mermaid_tag = session["out_buffer"][idx : idx + 10]
@@ -293,34 +291,52 @@ class Filter:
                     : -len(session["out_buffer"]) + idx
                 ]
 
-                # Check lookbehind: If the text just before the tag doesn't end with a newline, inject one!
-                # Spacing rule: empty line before if
-                if global_before and not global_before.endswith("\n"):
-
-                    before_mermaid += "\n"
-
-                event["choices"][0]["delta"]["content"] = (
-                    before_mermaid + mermaid_tag + "\n"
+                # Validate if it's a true block-level tag (starts at the beginning of a line, or after a markdown list marker)
+                line_prefix = (
+                    global_before.split("\n")[-1]
+                    if "\n" in global_before
+                    else global_before
                 )
 
-                session["out_buffer"] = ""
-                session["buffer"] = after_mermaid
-
-            # Still outside, hold back the pre-buffer window to avoid un-curable leaks
-            # Spacing rule: empty line before else
-            else:
+                # Allow empty lines or lines with just markdown list markers (e.g., "1. ", "- ", "* ")
+                is_valid_block_start = re.match(
+                    r"^\s*(?:\d+[\.\)]|[\-\*\+])?\s*$", line_prefix
+                )
 
                 # Spacing rule: empty line before if
-                if len(session["out_buffer"]) > 15:
+                if is_valid_block_start:
 
-                    safe_chunk = session["out_buffer"][:-15]
-                    session["out_buffer"] = session["out_buffer"][-15:]
-                    event["choices"][0]["delta"]["content"] = safe_chunk
+                    # Genuine block: start interception
+                    session["is_inside"] = True
+
+                    event["choices"][0]["delta"]["content"] = (
+                        before_mermaid + mermaid_tag + "\n"
+                    )
+
+                    session["out_buffer"] = ""
+                    session["buffer"] = after_mermaid
 
                 # Spacing rule: empty line before else
                 else:
 
-                    event["choices"][0]["delta"]["content"] = ""
+                    # It's an inline mention (e.g. conversational text). Let it pass cleanly!
+                    event["choices"][0]["delta"]["content"] = (
+                        before_mermaid + mermaid_tag
+                    )
+                    session["out_buffer"] = after_mermaid
+
+            # Still outside, hold back the pre-buffer window to avoid un-curable leaks
+            # Spacing rule: empty line before elif
+            elif len(session["out_buffer"]) > 15:
+
+                safe_chunk = session["out_buffer"][:-15]
+                session["out_buffer"] = session["out_buffer"][-15:]
+                event["choices"][0]["delta"]["content"] = safe_chunk
+
+            # Spacing rule: empty line before else
+            else:
+
+                event["choices"][0]["delta"]["content"] = ""
 
         return event
 
