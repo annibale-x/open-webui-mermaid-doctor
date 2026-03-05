@@ -63,4 +63,4 @@ Future updates may include a significantly larger training/validation dataset (~
 
 Tested against: Llama 3.x, Mistral-Small, Phi-4, Gpt-Oss, Gemma 3, DeepSeek, Qwen 3, Cogito, Gemini 3 Flash, and GPT-4o-Mini.  
 
-To report a specific hallucination pattern that MD failed to catch, please open an issue on the [GitHub Repository](https://github.com/annibale-x/open-webui-mermaid-doctor/issues).
+To report a specific hallucination pattern that MD failed to catch, please open an issue on the [GitHub Repository](https://github.com/annibale-x/open-webui-mermaid-doctor/issues)or simply post a comment below 👇
