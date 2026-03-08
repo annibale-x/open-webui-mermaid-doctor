@@ -10,7 +10,7 @@ Mermaid Doctor is a high-performance, transparent filter for Open WebUI designed
 
 ### 🆕 What's New in v0.1.7
 
-- **Extended Coverage:** Added logic to handle over 20 additional edge cases related to complex node labels and entity relationships.
+- **Extended Coverage:** Added logic to handle 20+ additional edge cases related to complex node labels and entity relationships.
 - **Performance Optimization:** All core regular expressions are now pre-compiled, significantly reducing processing overhead during high-speed token streaming.
 
 ---

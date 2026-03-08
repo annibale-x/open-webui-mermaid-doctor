@@ -73,7 +73,7 @@ class MermaidSanitizer:
     Implements the same logic as mermaid-doctor but in a modular component.
     """
 
-    SANITIZER_VERSION = "2.0.0"
+    SANITIZER_VERSION = "2.0.2"
 
     def __init__(self):
         # Common
@@ -184,21 +184,26 @@ class MermaidSanitizer:
             code = code[last_match.start() :]
 
         code_lower = code.lower()
+        diagram_type = matches[-1].group(1).lower() if matches else None
 
         # Route to specific sanitizers based on graph type
-        if "mindmap" in code_lower:
+        if diagram_type == "mindmap" or (not diagram_type and "mindmap" in code_lower):
             code = self._sanitize_mindmap(code)
 
-        elif "graph " in code_lower:
+        elif diagram_type in ("graph", "flowchart") or (
+            not diagram_type and ("graph " in code_lower or "flowchart" in code_lower)
+        ):
             code = self._sanitize_graph(code, valves)
 
-        elif "erdiagram" in code_lower:
+        elif diagram_type == "erdiagram" or (
+            not diagram_type and "erdiagram" in code_lower
+        ):
             code = self._sanitize_er(code)
 
-        elif "pie" in code_lower:
+        elif diagram_type == "pie" or (not diagram_type and "pie" in code_lower):
             code = self._sanitize_pie(code)
 
-        elif "gantt" in code_lower:
+        elif diagram_type == "gantt" or (not diagram_type and "gantt" in code_lower):
             code = self._sanitize_gantt(code)
 
         return "\n" + code + "\n"
