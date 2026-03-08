@@ -1,3 +1,9 @@
+* 2026-03-08: v0.1.7 - Architecture Refactoring & Regex Optimization (Hannibal)
+
+  * Refactored core logic into a modular `MermaidSanitizer` class for better maintainability.
+  * Optimized regex patterns for faster diagram detection and repair.
+  * Enhanced structural validation for ER and Graph diagrams.
+
 * 2026-03-05: v0.1.3 - Few shots refinement (Hannibal)
 
 * 2026-03-05: v0.1.2 - ER Syntax Hardening (Hannibal)

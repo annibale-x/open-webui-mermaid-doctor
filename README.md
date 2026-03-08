@@ -1,4 +1,4 @@
-## 🚑 Mermaid Doctor v0.1.6: Deterministic Mermaid Sanitizer
+## 🚑 Mermaid Doctor v0.1.7: Deterministic Mermaid Sanitizer
 
 Mermaid Doctor is a high-performance, transparent filter for Open WebUI designed to repair broken Mermaid diagram syntax in real-time. Unlike post-processing solutions, MD operates directly on the token stream using a deterministic state machine, ensuring zero additional token consumption and minimal latency.
 
@@ -16,6 +16,20 @@ Mermaid Doctor is a high-performance, transparent filter for Open WebUI designed
 - **Structural Enforcement:** Corrects common hallucinations like nested ER relationships, invalid bracket nesting in graphs, ragmented Gantt task definitions and more.
 
 > 📌Mermaid Doctor is not a substitute for a well-crafted prompt. It is a deterministic sanitizer designed to fix common syntactic hallucinations and structural errors. For optimal results, always provide clear instructions to the LLM alongside this filter.
+
+---
+
+### 🧩 Supported Diagrams
+
+Mermaid Doctor currently provides deterministic validation and real-time sanitization for the following 5 core diagram types:
+
+* **Entity-Relationship Diagrams** (`erDiagram`)
+* **Flowcharts** (`graph TD` / `graph LR` / `flowchart`)
+* **Gantt Charts** (`gantt`)
+* **Mindmaps** (`mindmap`)
+* **Pie Charts** (`pie`)
+
+*(Support for Sequence Diagrams, State Diagrams, and Class Diagrams is planned for future updates).*
 
 ---
 
