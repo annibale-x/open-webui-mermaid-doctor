@@ -143,7 +143,7 @@ class MermaidSanitizer:
         self.re_graph_node_paren_fix = re.compile(r'(\["[^"\]]+"\])\)')
         self.re_graph_node_bracket_fix = re.compile(r'(\("[^"\)]+"\))\]')
         self.re_graph_cylinder_fix = re.compile(r'\)"\]')
-        self.re_graph_swapped_quote = re.compile(r"\"\)\s*\]")
+        self.re_graph_swapped_quote = re.compile(r"\"\s*\)\s*([\]\}\)])")
         self.re_graph_node_content = re.compile(r"\[(.*?)\]")
         self.re_graph_link_in_node = re.compile(r'-->\s*\|\s*"?([^|\]"]+)"?\s*\]')
         self.re_graph_node_match = re.compile(r"^([^\[\(\{\>]+?)\s*([\[\(\{\>].*)?$")
@@ -659,11 +659,12 @@ class MermaidSanitizer:
         safe_block = self.re_graph_node_paren_fix.sub(r"\1", block)
         safe_block = self.re_graph_node_bracket_fix.sub(r"\1", safe_block)
 
-        # Fix: "CYLINDEREND" parsing error.
-        safe_block = self.re_graph_cylinder_fix.sub(r") \"]", safe_block)
-
         # Fix: Swapped quote and parenthesis at end of node (common hallucination)
-        safe_block = self.re_graph_swapped_quote.sub(')" ]', safe_block)
+        # e.g. `{"Text")}` -> `{"Text)"}` or `["Text")]` -> `["Text)"]`
+        safe_block = self.re_graph_swapped_quote.sub(r')"\1', safe_block)
+
+        # Fix: "CYLINDEREND" parsing error.
+        safe_block = self.re_graph_cylinder_fix.sub(r') "]', safe_block)
 
         # Fix: Remove structural characters (--> and |) from inside node labels [...]
         safe_block = self.re_graph_node_content.sub(
